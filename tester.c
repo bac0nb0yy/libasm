@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   tester.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dtelnov <dtelnov@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/12 21:55:31 by mdesfont          #+#    #+#             */
-/*   Updated: 2023/10/25 06:01:12 by dtelnov          ###   ########.fr       */
+/*   Updated: 2023/10/25 22:26:14 by dtelnov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,3 +337,28 @@ int			get_next_line(int fd, char **line)
 	return (ret);
 }
 
+// #include <errno.h>
+// #include <stdio.h>
+// #include "libasm.h"
+// #define BUFFER_SIZE 1000000
+
+// void	fill_buffer(char *buffer)
+// {
+// 	int i = 0;
+// 	while (i < BUFFER_SIZE)
+// 	{
+// 		buffer[i] = 'a';
+// 		i++;
+// 	}
+// 	buffer[i] = '\0';
+// }
+
+// int	main(void)
+// {
+// 	char buffer[BUFFER_SIZE];
+
+// 	fill_buffer(buffer);
+// 	char *xd = ft_strdup(buffer);
+// 	printf("%s\n", xd);
+// 	printf("%d\n", errno);
+// }

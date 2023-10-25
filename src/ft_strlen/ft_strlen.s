@@ -1,5 +1,9 @@
-global	ft_strlen
+bits 64
+
+section .data
 section	.text
+
+global	ft_strlen
 
 ft_strlen:
 	push	rbp
@@ -8,7 +12,7 @@ ft_strlen:
 	xor		rax, rax
 
 	.loop:
-		cmp		byte[rdi + rax], 0
+		cmp		BYTE [rdi + rax], 0
 		je		.done
 		inc		rax
 		jmp		.loop

@@ -1,12 +1,17 @@
-extern	__errno_location
-global	ft_read
+bits 64
+
+section .data
 section	.text
+
+extern	__errno_location
+
+global	ft_read
 
 ft_read:
 	push	rbp
 	mov		rbp, rsp
 
-	mov		rax, 0
+	xor		rax, rax
 	syscall
 
 	or		rax, rax

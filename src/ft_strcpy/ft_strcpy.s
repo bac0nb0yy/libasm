@@ -1,11 +1,14 @@
-global	ft_strcpy
+bits 64
+
+section .data
 section	.text
+
+global	ft_strcpy
 
 ft_strcpy:
     push	rbp
     mov		rbp, rsp
 
-    xor		rax, rax
 	xor		rbx, rbx
 
 	.loop:

@@ -1,6 +1,11 @@
-extern	__errno_location
-global	ft_write
+bits 64
+
+section .data
 section	.text
+
+extern	__errno_location
+
+global	ft_write
 
 ft_write:
 	push	rbp

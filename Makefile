@@ -27,7 +27,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(INC)
 	@$(ASM) $(ASMFLAGS) $< -o $@
 
 test: $(NAME) $(TEST)
-	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && ./check
+	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && (ulimit -v 4000 && ./check)
 
 clean:
 	@rm -rf $(OBJ_DIR)

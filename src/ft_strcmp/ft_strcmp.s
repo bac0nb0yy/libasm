@@ -1,5 +1,9 @@
-global	ft_strcmp
+bits 64
+
+section .data
 section	.text
+
+global	ft_strcmp
 
 ft_strcmp:
 	push	rbp

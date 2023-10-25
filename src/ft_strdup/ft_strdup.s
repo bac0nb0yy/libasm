@@ -1,9 +1,14 @@
+bits 64
+
+section .data
+section	.text
+
 extern	malloc
 extern	__errno_location
 extern	ft_strlen
 extern	ft_strcpy
+
 global	ft_strdup
-section	.text
 
 ft_strdup:
 	push    rbp
@@ -16,7 +21,7 @@ ft_strdup:
 	mov 	rdi, rax
 	call	malloc
 	or 		rax, rax
-	jle		.error_handler
+	je		.error_handler
 
 	mov		rdi, rax
 	mov		rsi, rbx
@@ -25,8 +30,7 @@ ft_strdup:
 
 	.error_handler:
 		call	__errno_location
-		mov		rbx, 12			;ENOMEM is the only error that can occurs.
-		mov		[rax], rbx
+		mov		BYTE [rax], 12	;ENOMEM is the only error that can occurs.
 		xor		rax, rax
 		jmp		.done
 
