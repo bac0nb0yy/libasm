@@ -16,7 +16,7 @@ ft_strdup:
 	mov 	rdi, rax
 	call	malloc
 	or 		rax, rax
-	je		.error_handler
+	jle		.error_handler
 
 	mov		rdi, rax
 	mov		rsi, rbx
