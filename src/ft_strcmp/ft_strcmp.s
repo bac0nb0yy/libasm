@@ -1,0 +1,25 @@
+global	ft_strcmp
+section	.text
+
+ft_strcmp:
+	push	rbp
+	mov		rbp, rsp
+
+	xor		rax, rax
+	xor		rbx, rbx
+	xor		rcx, rcx
+
+	.loop:
+		mov		al, [rdi + rcx]
+		mov		bl, [rsi + rcx]
+		cmp		al, bl
+		jne		.done
+		or		al, al
+		je		.done
+		inc		rcx
+		jmp		.loop
+
+	.done:
+		sub		rax, rbx
+		pop		rbp
+		ret
