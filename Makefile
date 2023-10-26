@@ -13,20 +13,28 @@ INC_DIR = includes
 # Files
 NAME = libasm.a
 SRCS = $(wildcard $(SRC_DIR)/*/*.s)
+SRCS_BONUS = $(wildcard $(SRC_DIR)/bonus/*/*.s)
 OBJS = $(patsubst $(SRC_DIR)/%.s, $(OBJ_DIR)/%.o, $(SRCS))
+OBJS_BONUS = $(patsubst $(SRC_DIR)/%.s, $(OBJ_DIR)/%.o, $(SRCS_BONUS))
 INC = $(wildcard $(INC_DIR)/*.h)
 TEST = tester.c
 
 all: $(NAME)
 
+bonus: $(OBJS) $(OBJS_BONUS)
+	ar rcs $(LIB_DIR)/$(NAME) $^
+
 $(NAME): $(OBJS)
-	@ar rcs $(LIB_DIR)/$@ $^
+	ar rcs $(LIB_DIR)/$@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(INC)
 	@mkdir -p $(@D)
 	@$(ASM) $(ASMFLAGS) $< -o $@
 
 test: $(NAME) $(TEST)
+	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && ./check
+
+malloc_test: $(NAME) $(TEST)
 	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && (ulimit -v 4000 && ./check)
 
 clean:

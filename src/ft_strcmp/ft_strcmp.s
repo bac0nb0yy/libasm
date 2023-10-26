@@ -24,6 +24,6 @@ ft_strcmp:
 		jmp		.loop
 
 	.done:
-		sub		rax, rbx
+		sub		eax, ebx
 		pop		rbp
 		ret
