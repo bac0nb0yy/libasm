@@ -10,7 +10,7 @@ ft_atoi_base:
 	mov		rbp, rsp
 
 	; rdi = str ; rsi = base
-	; rax = result ; rbx = sign ; rcx = i ; rdx = len
+	; rax = result ; r12 = sign ; rcx = i ; rdx = len
 
 	call	check_base_error
 	cmp		rax, 2
@@ -18,7 +18,7 @@ ft_atoi_base:
 	mov		rdx, rax
 	xor		rcx, rcx
 	call	get_sign
-	mov		rbx, rax
+	mov		r12, rax
 	xor		rax, rax
 
 	.loop:
@@ -38,7 +38,7 @@ ft_atoi_base:
 		jmp		.done
 
 	.done:
-		imul	rax, rbx
+		imul	rax, r12
 		pop		rbp
 		ret
 
@@ -51,19 +51,19 @@ check_base_error:
 	.loop:
 		cmp		BYTE [rsi + rax], 0
 		je		.done
-		xor		rbx, rbx
+		xor		r8, r8
 
 		.loop_nested:
-			cmp		BYTE [rsi + rbx], 0
+			cmp		BYTE [rsi + r8], 0
 			je		.check_illegal_char
-			cmp		rax, rbx
+			cmp		rax, r8
 			je		.continue_loop_nested
 			mov		cl, [rsi + rax]
-			cmp		cl, [rsi + rbx]
+			cmp		cl, [rsi + r8]
 			je		.error
 
 			.continue_loop_nested:
-				inc		rbx
+				inc		r8
 				jmp		.loop_nested
 
 		.check_illegal_char:
@@ -96,7 +96,7 @@ check_base_error:
 
 
 get_sign:
-	mov		rbx, 1
+	mov		r12, 1
 
 	.skip_spaces:
 		cmp		BYTE [rdi + rcx], 32
@@ -125,7 +125,7 @@ get_sign:
 		jmp		.done
 
 		.neg_sign:
-			neg		rbx
+			neg		r12
 			inc		rcx
 			jmp		.mult_sign
 
@@ -134,7 +134,7 @@ get_sign:
 			jmp		.mult_sign
 
 	.done:
-		mov		rax, rbx
+		mov		rax, r12
 		ret
 
 char_in_base:
