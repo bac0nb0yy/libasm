@@ -17,14 +17,14 @@ ft_strdup:
 	call    ft_strlen
 	inc 	rax
 
-	mov		rbx, rdi
+	mov		r12, rdi
 	mov 	rdi, rax
 	call	malloc
 	or 		rax, rax
 	je		.error_handler
 
 	mov		rdi, rax
-	mov		rsi, rbx
+	mov		rsi, r12
 	call	ft_strcpy
 	jmp		.done
 

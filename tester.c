@@ -364,9 +364,25 @@
 // // 	printf("%d\n", errno);
 // // }
 
+// int main()
+// {
+// 	int test = ft_atoi_base("-42", "0123456789");
+// 	printf("%d\n", test);
+// 	return (0);
+// }
+
 int main()
 {
-	int test = ft_atoi_base("-42", "0123456789");
-	printf("%d\n", test);
-	return (0);
+	t_list *head = NULL;
+	printf("%p\n", head);
+	ft_list_push_front(&head, "lol");
+	printf("%p\n", head);
+	printf("%s\n", (char *)head->data);
+	ft_list_push_front(&head, "xd");
+	printf("%p\n", head);
+	printf("%s\n", (char *)head->data);
+	ft_list_push_front(&head, "mdr");
+	printf("%p\n", head);
+	printf("%s\n", (char *)head->data);
+	free(head);
 }

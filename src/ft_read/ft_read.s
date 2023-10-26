@@ -21,10 +21,10 @@ ft_read:
 	.error_handler:
 		push	rax
 		call	__errno_location
-		mov		rbx, rax
+		mov		rdx, rax
 		pop		rax
 		neg		rax
-		mov		[rbx], rax
+		mov		[rdx], rax
 		mov		rax, -1
 		jmp		.done
 

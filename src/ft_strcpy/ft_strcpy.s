@@ -9,17 +9,17 @@ ft_strcpy:
     push	rbp
     mov		rbp, rsp
 
-	xor		rbx, rbx
+	xor		rcx, rcx
 
 	.loop:
-		mov		al, [rsi + rbx]
-		mov		[rdi + rbx], al
-		inc		rbx
+		mov		al, [rsi + rcx]
+		mov		[rdi + rcx], al
+		inc		rcx
 		or		al, al
 		je		.done
 		jmp		.loop
 
 	.done:
-		pop		rbp
 		mov		rax, rdi
+		pop		rbp
 		ret

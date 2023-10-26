@@ -9,14 +9,14 @@ ft_strcmp:
 	push	rbp
 	mov		rbp, rsp
 
-	xor		rax, rax
-	xor		rbx, rbx
+	xor		eax, eax
+	xor		r8d, r8d
 	xor		rcx, rcx
 
 	.loop:
 		mov		al, [rdi + rcx]
-		mov		bl, [rsi + rcx]
-		cmp		al, bl
+		mov		r8b, [rsi + rcx]
+		cmp		al, r8b
 		jne		.done
 		or		al, al
 		je		.done
@@ -24,6 +24,6 @@ ft_strcmp:
 		jmp		.loop
 
 	.done:
-		sub		eax, ebx
+		sub		eax, r8d
 		pop		rbp
 		ret
