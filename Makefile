@@ -6,12 +6,12 @@ CFLAGS = -Wall -Wextra -Werror
 ASM = nasm
 ASMFLAGS = -f elf64
 
-SRC_DIR = sources
-OBJ_DIR = objects
-LIB_DIR = library
-INC_DIR = includes
+SRC_DIR = sources/
+OBJ_DIR = objects/
+LIB_DIR = library/
+INC_DIR = includes/
 
-RM = rm -f
+RM = rm -rf
 
 ERASE_L = \033[K
 CURS_UP = \033[A
@@ -43,13 +43,17 @@ BWHITE = \033[1;37m
 GREEN_BG = \033[48;5;2m
 
 MANDATORY := ft_io \
-			 ft_
+			 ft_strcmp \
+			 ft_strcpy \
+			 ft_strdup \
+			 ft_strlen \
 
-SRCS_MANDATORY = $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(MANDATORY)))
+SRCS_MANDATORY = $(addprefix $(SRC_DIR), $(addsuffix .s, $(MANDATORY)))
+OBJS_MANDATORY = $(addprefix $(OBJ_DIR), $(notdir $(SRCS_MANDATORY:.s=.o)))
 
-OBJS = $(SRCS:.cpp=.o)
+INCS = includes/libasm.h
 
-TOTAL = $(words $(SRCS))
+TOTAL = $(words $(SRCS_MANDATORY))
 FILE_COUNT = 0
 
 BAR_COUNT = 0
@@ -88,7 +92,7 @@ endef
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS_MANDATORY)
 	@echo "$(ERASE_L)$(BOLD)\tCompiling:$(NC)"
 	@printf "\t█$(GREEN)"
 	@for N in $$(seq 1 $(BAR_PROGRESS)); do \
@@ -103,12 +107,14 @@ $(NAME): $(OBJS)
 	@printf "$(LOAD_CURS_SAVE)$(NC)█$(CURS_UP)"
 	@printf "\b\b\b\b$(BOLD)%3d%%$(NC)\r" $(PERCENT)
 	@echo "\n\n\n[🔘] $(BGREEN)$(PROJECT_NAME) compiled !$(NC)\n"
-	@$(CC) $(CFLAGS) $(OBJS) -o $@
+	@ar rcs $(LIB_DIR)/$@ $^
 	@printf "[✨] $(BCYAN)[ %d/%d ]\t$(BWHITE)All files have been compiled ✔️$(NC)\n" $(FILE_COUNT) $(TOTAL)
 	@echo "[💠] $(BCYAN)$(PROJECT_NAME)\t$(BWHITE) created ✔️\n$(NC)"
 
-%.o: %.cpp
-	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)%.o: $(SRC_DIR)%.s $(INCS)
+	@mkdir -p $(OBJ_DIR)
+	@$(ASM) $(ASMFLAGS) $< -o $@
 	@$(eval FILE_COUNT=$(shell echo $$(($(FILE_COUNT)+1))))
 	@$(eval PERCENT:=$(shell echo $$((100*$(FILE_COUNT) /$(TOTAL)))))
 	@$(eval BAR_PROGRESS=$(shell echo $$(($(BAR_SIZE)*$(FILE_COUNT)/$(TOTAL)))))
@@ -127,11 +133,11 @@ $(NAME): $(OBJS)
 bonus: all
 
 clean:
-	@$(RM) $(OBJS)
+	@$(RM) $(OBJ_DIR)
 	@echo "[🧼] $(BYELLOW)Objects $(YELLOW)files have been cleaned from $(PROJECT_NAME) ✔️$(NC)\n"
 
 fclean: clean
-	@$(RM) $(NAME)
+	@rm -f $(LIB_DIR)/$(NAME)
 	@echo "[🚮] $(BRED)All $(RED)files have been cleaned ✔️$(NC)\n"
 
 re: clean all
