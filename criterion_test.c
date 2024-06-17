@@ -1,5 +1,6 @@
 #include <criterion.h>
-#include <rand.h>
+#include <stdlib.h>
+#include "libasm.h"
 
 void generate_random_string(char *str, size_t length) {
     static const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -13,9 +14,10 @@ void generate_random_string(char *str, size_t length) {
 }
 
 void strlen_tests() {
-	int actual = ft_strlen()
-	cr_assert_arr_eq(actual, expected, sizeof(expected), 
-                     "Expected [%d] bytes but got [%d] bytes for string [%s]", expected_s, actual_s);
+	int actual_length = ft_strlen("danil");
+	int expected_length = strlen("danil");
+
+	cr_expect(actual_length == expected_length);
 }
 
-Test(machin, machin0) { cr_expect(ft_machin(0) == 3); }
+Test(machin, machin0) { strlen_tests(); }

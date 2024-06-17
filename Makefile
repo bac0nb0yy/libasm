@@ -1,6 +1,9 @@
 NAME = libasm.a
 PROJECT_NAME = libasm
 
+TEST_FILE_NAME = criterion_test.c
+EXECUTABLE_NAME = checker
+
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 ASM = nasm
@@ -10,6 +13,9 @@ SRC_DIR = sources/
 OBJ_DIR = objects/
 LIB_DIR = library/
 INC_DIR = includes/
+
+CRITERION_DIR = $(HOME)/Criterion/include/criterion
+CRITERION_FLAGS = -Wl,-rpath=$(HOME)/Criterion/build/src -L$(HOME)/Criterion/build/src -W
 
 RM = rm -rf
 
@@ -142,4 +148,7 @@ fclean: clean
 
 re: clean all
 
-.PHONY: bonus all clean fclean re
+test: $(NAME) $(TEST_FILE_NAME)
+	@$(CC) -o $(EXECUTABLE_NAME) $(TEST_FILE_NAME) -I$(INC_DIR) -I$(CRITERION_DIR) $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) && ./$(EXECUTABLE_NAME)
+
+.PHONY: bonus all clean fclean re test
