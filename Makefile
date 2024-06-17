@@ -1,49 +1,190 @@
-# Compiler and flags
+NAME = libasm.a
+PROJECT_NAME = libasm
+
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 ASM = nasm
 ASMFLAGS = -f elf64
 
-# Directories
-SRC_DIR = src
-OBJ_DIR = obj
-LIB_DIR = lib
+SRC_DIR = sources
+OBJ_DIR = objects
+LIB_DIR = library
 INC_DIR = includes
 
-# Files
-NAME = libasm.a
-SRCS = $(wildcard $(SRC_DIR)/*/*.s)
-SRCS_BONUS = $(wildcard $(SRC_DIR)/bonus/*/*.s)
-OBJS = $(patsubst $(SRC_DIR)/%.s, $(OBJ_DIR)/%.o, $(SRCS))
-OBJS_BONUS = $(patsubst $(SRC_DIR)/%.s, $(OBJ_DIR)/%.o, $(SRCS_BONUS))
-INC = $(wildcard $(INC_DIR)/*.h)
-TEST = tester.c
+RM = rm -f
+
+ERASE_L = \033[K
+CURS_UP = \033[A
+SAVE_CURS_POS = \033[s
+LOAD_CURS_SAVE = \033[u
+BOLD = \033[1m
+BLINK = \033[5m
+
+NC = \033[0m
+
+YELLOW = \033[0;33m
+GREEN = \033[0;32m
+BLUE = \033[0;34m
+RED = \033[0;31m
+PURPLE = \033[0;35m
+CYAN = \033[0;36m
+BLACK = \033[0;30
+WHITE = \033[0;37m
+
+BYELLOW = \033[1;33m
+BGREEN = \033[1;32m
+BBLUE = \033[1;34m
+BRED = \033[1;31m
+BPURPLE = \033[1;35m
+BCYAN = \033[1;36m
+BBLACK = \033[1;30m
+BWHITE = \033[1;37m
+
+GREEN_BG = \033[48;5;2m
+
+SRC_DIR = sources/
+
+FILES = main Cgi Location ServerConfig Client Logger ServerManager utils file_utils ConfigParser Request Response StringVector
+
+SRCS = $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(FILES)))
+
+OBJS = $(SRCS:.cpp=.o)
+
+TOTAL = $(words $(SRCS))
+FILE_COUNT = 0
+
+BAR_COUNT = 0
+BAR_PROGRESS = 0
+BAR_SIZE = 64
+GRADIENT_G := \033[38;5;160m \
+			\033[38;5;196m \
+			\033[38;5;202m \
+			\033[38;5;208m \
+			\033[38;5;214m \
+			\033[38;5;220m \
+			\033[38;5;226m \
+			\033[38;5;190m \
+			\033[38;5;154m \
+			\033[38;5;118m \
+			\033[38;5;82m \
+			\033[38;5;46m \
+
+GRAD_G_SIZE := 12
+GRAD_G_PROG := 0
+
+GRADIENT_B = \033[38;5;2m \
+			 \033[38;5; \
+			 \033[38;5; \
+			 \033[38;5; \
+			 \033[38;5; \
+			 \033[38;5; \
+			 \033[38;5; \
+			 \033[38;5; \
+			 \033[38;5; \
+			 \033[38;5;
+
+define GET_G_GRADIENT
+$(word $(1),$(GRADIENT_G))
+endef
 
 all: $(NAME)
 
-bonus: $(OBJS) $(OBJS_BONUS)
-	ar rcs $(LIB_DIR)/$(NAME) $^
-
 $(NAME): $(OBJS)
-	ar rcs $(LIB_DIR)/$@ $^
+	@echo "$(ERASE_L)$(BOLD)\tCompiling:$(NC)"
+	@printf "\t█$(GREEN)"
+	@for N in $$(seq 1 $(BAR_PROGRESS)); do \
+		echo -n █; \
+	done
+	@printf "$(SAVE_CURS_POS)"
+	@$(eval BAR_PROGRESS=$(shell echo $$(($(BAR_PROGRESS) / 2))))
+	@for N in $$(seq 1 $(BAR_PROGRESS)); do \
+		echo -n "\b"; \
+	done
+	@printf "\b\b$(NC)$(BLINK)$(BOLD)$(GREEN_BG)DONE"
+	@printf "$(LOAD_CURS_SAVE)$(NC)█$(CURS_UP)"
+	@printf "\b\b\b\b$(BOLD)%3d%%$(NC)\r" $(PERCENT)
+	@echo "\n\n\n[🔘] $(BGREEN)$(PROJECT_NAME) compiled !$(NC)\n"
+	@$(CC) $(CFLAGS) $(OBJS) -o $@
+	@printf "[✨] $(BCYAN)[ %d/%d ]\t$(BWHITE)All files have been compiled ✔️$(NC)\n" $(FILE_COUNT) $(TOTAL)
+	@echo "[💠] $(BCYAN)$(PROJECT_NAME)\t$(BWHITE) created ✔️\n$(NC)"
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(INC)
-	@mkdir -p $(@D)
-	@$(ASM) $(ASMFLAGS) $< -o $@
+%.o: %.cpp
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(eval FILE_COUNT=$(shell echo $$(($(FILE_COUNT)+1))))
+	@$(eval PERCENT:=$(shell echo $$((100*$(FILE_COUNT) /$(TOTAL)))))
+	@$(eval BAR_PROGRESS=$(shell echo $$(($(BAR_SIZE)*$(FILE_COUNT)/$(TOTAL)))))
+	@$(eval GRAD_G_PROG=$(shell echo $$(($(GRAD_G_SIZE)*$(FILE_COUNT)/$(TOTAL) + 1))))
+	@printf "\t$(BWHITE)Compiling: $@%*s...$(NC)$(ERASE_L)\n" $$(($(FILE_COUNT)/$(TOTAL)*33))
+	@printf "\t█$(call GET_G_GRADIENT,$(GRAD_G_PROG))"
+	@for N in $$(seq 1 $(BAR_PROGRESS)); do \
+		echo -n █; \
+	done
+	@for N in $$(seq 1 $(shell echo $$(($(BAR_SIZE) - $(BAR_PROGRESS))))); do \
+		echo -n ░; \
+	done
+	@printf "$(NC)█$(CURS_UP)"
+	@printf "\b\b\b\b$(BOLD)%3d%%$(NC)\r" $(PERCENT)
 
-test: $(NAME) $(TEST)
-	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && ./check
-
-malloc_test: $(NAME) $(TEST)
-	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && (ulimit -v 3800 && ./check)
+bonus: all
 
 clean:
-	@rm -rf $(OBJ_DIR)
+	@$(RM) $(OBJS)
+	@echo "[🧼] $(BYELLOW)Objects $(YELLOW)files have been cleaned from $(PROJECT_NAME) ✔️$(NC)\n"
 
 fclean: clean
-	@rm -f $(LIB_DIR)/$(NAME)
-	@rm -f check
+	@$(RM) $(NAME)
+	@echo "[🚮] $(BRED)All $(RED)files have been cleaned ✔️$(NC)\n"
 
-re: fclean all
+re: clean all
 
-.PHONY: all clean fclean re
+.PHONY: bonus all clean fclean re
+
+# # Compiler and flags
+# CC = cc
+# CFLAGS = -Wall -Wextra -Werror
+# ASM = nasm
+# ASMFLAGS = -f elf64
+
+# # Directories
+# SRC_DIR = src
+# OBJ_DIR = obj
+# LIB_DIR = lib
+# INC_DIR = includes
+
+# # Files
+# NAME = libasm.a
+# SRCS = $(wildcard $(SRC_DIR)/*/*.s)
+# SRCS_BONUS = $(wildcard $(SRC_DIR)/bonus/*/*.s)
+# OBJS = $(patsubst $(SRC_DIR)/%.s, $(OBJ_DIR)/%.o, $(SRCS))
+# OBJS_BONUS = $(patsubst $(SRC_DIR)/%.s, $(OBJ_DIR)/%.o, $(SRCS_BONUS))
+# INC = $(wildcard $(INC_DIR)/*.h)
+# TEST = tester.c
+
+# all: $(NAME)
+
+# bonus: $(OBJS) $(OBJS_BONUS)
+# 	ar rcs $(LIB_DIR)/$(NAME) $^
+
+# $(NAME): $(OBJS)
+# 	ar rcs $(LIB_DIR)/$@ $^
+
+# $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(INC)
+# 	@mkdir -p $(@D)
+# 	@$(ASM) $(ASMFLAGS) $< -o $@
+
+# test: $(NAME) $(TEST)
+# 	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && ./check
+
+# malloc_test: $(NAME) $(TEST)
+# 	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && (ulimit -v 3800 && ./check)
+
+# clean:
+# 	@rm -rf $(OBJ_DIR)
+
+# fclean: clean
+# 	@rm -f $(LIB_DIR)/$(NAME)
+# 	@rm -f check
+
+# re: fclean all
+
+# .PHONY: all clean fclean re
