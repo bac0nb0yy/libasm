@@ -143,12 +143,16 @@ clean:
 	@echo "[🧼] $(BYELLOW)Objects $(YELLOW)files have been cleaned from $(PROJECT_NAME) ✔️$(NC)\n"
 
 fclean: clean
-	@rm -f $(LIB_DIR)/$(NAME)
+	@$(RM) $(LIB_DIR)/$(NAME)
+	@$(RM) $(EXECUTABLE_NAME)
 	@echo "[🚮] $(BRED)All $(RED)files have been cleaned ✔️$(NC)\n"
 
 re: clean all
 
-test: $(NAME) $(TEST_FILE_NAME)
+test: $(NAME)
 	@$(CC) -o $(EXECUTABLE_NAME) $(TEST_FILE_NAME) -I$(INC_DIR) -I$(CRITERION_DIR) $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) && ./$(EXECUTABLE_NAME)
+
+test42: $(NAME)
+	@$(CC) -o $(EXECUTABLE_NAME) $(TEST_FILE_NAME) -I$(INC_DIR) -I$(CRITERION_DIR) $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) -D TEST42=true && ./$(EXECUTABLE_NAME)
 
 .PHONY: bonus all clean fclean re test
