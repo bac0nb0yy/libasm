@@ -35,7 +35,7 @@ test: $(NAME) $(TEST)
 	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && ./check
 
 malloc_test: $(NAME) $(TEST)
-	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && (ulimit -v 4000 && ./check)
+	@$(CC) $(CFLAGS) -I$(INC_DIR) -o check $(TEST) -L$(LIB_DIR) -lasm -lc && (ulimit -v 3800 && ./check)
 
 clean:
 	@rm -rf $(OBJ_DIR)

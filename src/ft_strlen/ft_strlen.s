@@ -1,22 +1,31 @@
 bits 64
 
 section .data
-section	.text
 
-global	ft_strlen
+section .text
+
+global ft_strlen
 
 ft_strlen:
-	push	rbp
-	mov		rbp, rsp
+    push    rbp
+    mov     rbp, rsp
 
-	xor		rax, rax
+    mov     rax, rdi
+    vpxor   ymm0, ymm0, ymm0
 
-	.loop:
-		cmp		BYTE [rdi + rax], 0
-		je		.done
-		inc		rax
-		jmp		.loop
+    .loop:
+        vmovdqu		ymm1, [rax]
+        vpcmpeqb	ymm2, ymm1, ymm0
+        vpmovmskb	edx, ymm2
+        test		edx, edx
+        jnz			.found_zero
+        add			rax, 32
+        jmp			.loop
 
-	.done:
-		pop		rbp
-		ret
+    .found_zero:
+        bsf		ecx, edx
+        add		rax, rcx
+
+    sub		rax, rdi
+    pop		rbp
+    ret
