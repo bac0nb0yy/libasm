@@ -42,11 +42,10 @@ BWHITE = \033[1;37m
 
 GREEN_BG = \033[48;5;2m
 
-SRC_DIR = sources/
+MANDATORY := ft_io \
+			 ft_
 
-FILES = main Cgi Location ServerConfig Client Logger ServerManager utils file_utils ConfigParser Request Response StringVector
-
-SRCS = $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(FILES)))
+SRCS_MANDATORY = $(addprefix $(SRC_DIR), $(addsuffix .cpp, $(MANDATORY)))
 
 OBJS = $(SRCS:.cpp=.o)
 
@@ -138,18 +137,6 @@ fclean: clean
 re: clean all
 
 .PHONY: bonus all clean fclean re
-
-# # Compiler and flags
-# CC = cc
-# CFLAGS = -Wall -Wextra -Werror
-# ASM = nasm
-# ASMFLAGS = -f elf64
-
-# # Directories
-# SRC_DIR = src
-# OBJ_DIR = obj
-# LIB_DIR = lib
-# INC_DIR = includes
 
 # # Files
 # NAME = libasm.a
