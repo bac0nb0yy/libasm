@@ -13,6 +13,7 @@
 
 #define NB_STRLEN_TESTCASES 100
 #define NB_STRCPY_TESTCASES 100
+#define NB_STRCMP_TESTCASES 100
 
 static inline char *generate_random_string(uint max_length) {
 	uint generated_length = rand() % max_length;
@@ -155,5 +156,78 @@ Test(mandatory, strcpy_smaller_src) {
 Test(mandatory, strcpy_empty_src) {
 	for (uint i = 0; i < NB_STRCPY_TESTCASES; ++i) {
         strcpy_empty_src_tests();
+    }
+}
+
+static void strcmp_random_tests(uint max_length_string) {
+    char *string1 = generate_random_string(max_length_string);
+    char *string2 = generate_random_string(max_length_string);
+
+    int std_result = strcmp(string1, string2);
+    int custom_result = ft_strcmp(string1, string2);
+
+    cr_expect((std_result == 0 && custom_result == 0) || (std_result < 0 && custom_result < 0) || (std_result > 0 && custom_result > 0));
+
+    free(string1);
+    free(string2);
+}
+
+static void strcmp_longer_src_tests() {
+    char *longer_src1 = "Hellooooooooooo";
+    char *longer_src2 = "Hellooooooooooo";
+
+    int std_result = strcmp(longer_src1, longer_src2);
+    int custom_result = ft_strcmp(longer_src1, longer_src2);
+
+    cr_expect((std_result == 0 && custom_result == 0) || (std_result < 0 && custom_result < 0) || (std_result > 0 && custom_result > 0));
+}
+
+static void strcmp_smaller_src_tests() {
+    char *smaller_src1 = "Hello";
+    char *smaller_src2 = "Helloooooo";
+
+    int std_result = strcmp(smaller_src1, smaller_src2);
+    int custom_result = ft_strcmp(smaller_src1, smaller_src2);
+
+    cr_expect((std_result == 0 && custom_result == 0) || (std_result < 0 && custom_result < 0) || (std_result > 0 && custom_result > 0));
+}
+
+static void strcmp_empty_src_tests() {
+    char *empty_src1 = "";
+    char *empty_src2 = "";
+
+    int std_result = strcmp(empty_src1, empty_src2);
+    int custom_result = ft_strcmp(empty_src1, empty_src2);
+
+    cr_expect((std_result == 0 && custom_result == 0) || (std_result < 0 && custom_result < 0) || (std_result > 0 && custom_result > 0));
+}
+
+Test(mandatory, strcmp_small_strings) {
+    for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
+        strcmp_random_tests(SMALL_STRING_MAX_LENGTH);
+    }
+}
+
+Test(mandatory, strcmp_long_strings) {
+    for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
+        strcmp_random_tests(LONG_STRING_MAX_LENGTH);
+    }
+}
+
+Test(mandatory, strcmp_longer_src) {
+	for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
+        strcmp_longer_src_tests();
+    }
+}
+
+Test(mandatory, strcmp_smaller_src) {
+	for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
+        strcmp_smaller_src_tests();
+    }
+}
+
+Test(mandatory, strcmp_empty_src) {
+	for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
+        strcmp_empty_src_tests();
     }
 }
