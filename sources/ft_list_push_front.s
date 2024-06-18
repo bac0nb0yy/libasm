@@ -51,9 +51,7 @@ create_node:
 	jmp		.done
 
 	.error_handler:
-		call	__errno_location
-		mov		BYTE [rax], 12	;ENOMEM is the only error that can occurs.
-		xor		rax, rax
+		call	__errno_location 
 		ret
 
 	.done:

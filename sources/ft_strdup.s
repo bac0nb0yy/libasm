@@ -19,20 +19,14 @@ ft_strdup:
 
 	mov		r12, rdi
 	mov 	rdi, rax
-	call	malloc
+	call	malloc wrt ..plt
 	or 		rax, rax
-	je		.error_handler
+	je		.done
 
 	mov		rdi, rax
 	mov		rsi, r12
 	call	ft_strcpy
 	jmp		.done
-
-	.error_handler:
-		; call	__errno_location
-		; mov		BYTE [rax], 12	;ENOMEM is the only error that can occurs.
-		xor		rax, rax
-		jmp		.done
 
 	.done:
 		pop		rbp
