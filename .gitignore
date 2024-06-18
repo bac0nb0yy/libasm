@@ -1,0 +1,4 @@
+*.o
+*.a
+checker
+a.out
