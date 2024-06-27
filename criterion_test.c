@@ -73,25 +73,6 @@ static void strcpy_random_tests(uint max_length_string) {
     free(dest_custom);
 }
 
-static void strcpy_longer_src_tests() {
-    char *longer_src = "Hellooooooooooo";
-    char *dst_smaller = malloc(10);
-    char *mydst_smaller = malloc(10);
-
-    if (!dst_smaller || !mydst_smaller) {
-        dprintf(STDERR_FILENO, "Allocation failed");
-        exit(EXIT_FAILURE);
-    }
-
-    strcpy(dst_smaller, longer_src);
-    ft_strcpy(mydst_smaller, longer_src);
-
-    cr_expect(strcmp(dst_smaller, mydst_smaller) == 0);
-
-    free(dst_smaller);
-    free(mydst_smaller);
-}
-
 static void strcpy_smaller_src_tests() {
     char *smaller_src = "Helloooooo";
     char *dst_longer = malloc(15);
@@ -138,12 +119,6 @@ Test(mandatory, strcpy_small_strings) {
 Test(mandatory, strcpy_long_strings) {
     for (uint i = 0; i < NB_STRCPY_TESTCASES; ++i) {
         strcpy_random_tests(LONG_STRING_MAX_LENGTH);
-    }
-}
-
-Test(mandatory, strcpy_longer_src) {
-	for (uint i = 0; i < NB_STRCPY_TESTCASES; ++i) {
-        strcpy_longer_src_tests();
     }
 }
 

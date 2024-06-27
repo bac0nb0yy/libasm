@@ -27,3 +27,5 @@ ft_strcmp:
 		sub		eax, r8d
 		pop		rbp
 		ret
+
+section .note.GNU-stack noalloc noexec nowrite progbits
