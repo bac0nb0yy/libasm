@@ -206,4 +206,3 @@ Test(mandatory, strcmp_empty_src) {
         strcmp_empty_src_tests();
     }
 }
-
