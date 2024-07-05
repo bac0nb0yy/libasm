@@ -144,7 +144,7 @@ clean:
 	@echo "[🧼] $(BYELLOW)Objects $(YELLOW)files have been cleaned from $(PROJECT_NAME) ✔️$(NC)\n"
 
 fclean: clean
-	@$(RM) $(LIB_DIR)/$(NAME)
+	@$(RM) $(LIB_DIR)
 	@$(RM) $(EXECUTABLE_NAME)
 	@echo "[🚮] $(BRED)All $(RED)files have been cleaned ✔️$(NC)\n"
 
