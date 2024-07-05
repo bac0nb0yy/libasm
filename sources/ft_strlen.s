@@ -28,6 +28,7 @@ ft_strlen:
 
     sub		rax, rdi
     pop		rbp
+    vzeroupper
     ret
 
 section .note.GNU-stack noalloc noexec nowrite progbits
