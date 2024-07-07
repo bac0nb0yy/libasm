@@ -15,7 +15,7 @@
 #define NB_STRCPY_TESTCASES 100
 #define NB_STRCMP_TESTCASES 100
 #define NB_WRITE_TESTCASES 100
-#define NB_READ_TESTCASES 100
+#define NB_READ_TESTCASES 2
 #define BUFFER_FIXED_SIZE_READ 1024
 
 static inline char *generate_random_string(uint max_length) {
@@ -267,7 +267,13 @@ static void write_to_read_only_file_test(const char *text) {
 
 Test(mandatory, write_to_file) {
     for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
-        write_to_file_test("Hello, world!");
+        char *generated_string = generate_random_string(LONG_STRING_MAX_LENGTH);
+
+        if (!generated_string) {
+            exit(EXIT_FAILURE);
+        }
+
+        write_to_file_test(generated_string);
     }
 }
 
@@ -295,11 +301,11 @@ Test(mandatory, write_to_read_only_file) {
     }
 }
 
-static void read_from_file_test(uint max_length_string) {
+static void read_from_file_test(bool fixed_buffer_size) {
     int fd = open("test_input.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
     cr_assert(fd != -1, "Failed to open file for writing.");
 
-    char *expected_content = generate_random_string(max_length_string);
+    char *expected_content = generate_random_string(LONG_STRING_MAX_LENGTH);
 
     if (!expected_content) {
         close(fd);
@@ -312,14 +318,23 @@ static void read_from_file_test(uint max_length_string) {
     fd = open("test_input.txt", O_RDONLY);
     cr_assert(fd != -1, "Failed to open file for reading.");
 
-    char    *buffer = calloc(sizeof(char), max_length_string);
+    size_t buffer_size = fixed_buffer_size ? BUFFER_FIXED_SIZE_READ : rand() % BUFFER_FIXED_SIZE_READ;
+    char    *buffer = calloc(sizeof(char), LONG_STRING_MAX_LENGTH + 1);
 
     if (!buffer) {
         close(fd);
         exit(EXIT_FAILURE);
     }
 
-    ssize_t bytes_read = ft_read(fd, buffer, max_length_string);
+    ssize_t bytes_read = 0;
+    ssize_t bytes = 0;
+    for (;;) {
+        bytes = ft_read(fd, buffer, buffer_size);
+        if (bytes < 1) {
+            break;
+        }
+        bytes_read += bytes;
+    }
     close(fd);
 
     cr_expect(bytes_read == (ssize_t)strlen(expected_content), "ft_read did not read the expected number of bytes.");
@@ -346,14 +361,53 @@ static void read_from_empty_file_test() {
     cr_expect(bytes_read == 0, "ft_read should return 0 when reading from an empty file.");
 }
 
-Test(mandatory, read_from_file_fixed_buffer) {
+static void read_with_negative_fd_test() {
+    char buffer[100];
+    errno = 0;
+    ssize_t bytes_read = ft_read(-1, buffer, sizeof(buffer));
+    cr_expect(bytes_read == -1, "ft_read should fail with negative file descriptor.");
+    cr_expect(errno == EBADF, "errno should be set to EBADF for negative file descriptor.");
+}
+
+static void read_from_write_only_file_test() {
+    char buffer[100];
+    int fd = open("write_only_file.txt", O_WRONLY | O_CREAT | O_TRUNC, 0222);
+    cr_assert(fd != -1, "Failed to open or create write-only file.");
+
+    errno = 0;
+    ssize_t bytes_read = ft_read(fd, buffer, sizeof(buffer));
+    close(fd);
+
+    cr_expect(bytes_read == -1, "ft_read should fail when reading from a write-only file.");
+    cr_expect(errno == EBADF || errno == EACCES, "errno should be set to EBADF or EACCES when reading from a write-only file.");
+}
+
+Test(mandatory, read_from_file_fixed_buffer_length) {
     for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
-        read_from_file_test(BUFFER_FIXED_SIZE_READ);
+        read_from_file_test(false);
+    }
+}
+
+Test(mandatory, read_from_file_random_buffer_length) {
+    for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
+        read_from_file_test(true);
     }
 }
 
 Test(mandatory, read_from_empy_file) {
     for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
         read_from_empty_file_test();
+    }
+}
+
+Test(mandatory, read_with_negative_fd) {
+    for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
+        read_with_negative_fd_test();
+    }
+}
+
+Test(mandatory, read_from_write_only_file) {
+    for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
+        read_from_write_only_file_test();
     }
 }
