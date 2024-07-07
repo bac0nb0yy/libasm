@@ -14,6 +14,8 @@
 #define NB_STRLEN_TESTCASES 100
 #define NB_STRCPY_TESTCASES 100
 #define NB_STRCMP_TESTCASES 100
+#define NB_WRITE_TESTCASES 100
+#define NB_READ_TESTCASES 100
 
 static inline char *generate_random_string(uint max_length) {
 	uint generated_length = rand() % max_length;
@@ -260,4 +262,27 @@ Test(mandatory, write_with_negative_fd) {
 
 Test(mandatory, write_to_read_only_file) {
     write_to_read_only_file_test("Attempt to write to read-only file.");
+}
+
+static void read_from_file_test(uint max_length_string) {
+    int fd = open("test_input.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    cr_assert(fd != -1, "Failed to open file for writing.");
+
+    char *expected_content = generate_random_string(max_length_string);
+    write(fd, expected_content, strlen(expected_content));
+    close(fd);
+
+    fd = open("test_input.txt", O_RDONLY);
+    cr_assert(fd != -1, "Failed to open file for reading.");
+
+    char    *buffer = calloc(sizeof(char), max_length_string);
+    ssize_t bytes_read = ft_read(fd, buffer, max_length_string);
+    close(fd);
+
+    cr_expect(bytes_read == (ssize_t)strlen(expected_content), "ft_read did not read the expected number of bytes.");
+    cr_expect(strcmp(buffer, expected_content) == 0, "Read content does not match expected content.");
+}
+
+Test(mandatory, read_from_file_random_length_str) {
+    read_from_file_test(1024);
 }

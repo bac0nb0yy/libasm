@@ -146,6 +146,7 @@ clean:
 fclean: clean
 	@$(RM) $(LIB_DIR)
 	@$(RM) $(EXECUTABLE_NAME)
+	@$(RM) *.txt
 	@echo "[🚮] $(BRED)All $(RED)files have been cleaned ✔️$(NC)\n"
 
 re: clean all
