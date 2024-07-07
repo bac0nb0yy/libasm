@@ -16,6 +16,7 @@
 #define NB_STRCMP_TESTCASES 100
 #define NB_WRITE_TESTCASES 100
 #define NB_READ_TESTCASES 100
+#define BUFFER_FIXED_SIZE_READ 1024
 
 static inline char *generate_random_string(uint max_length) {
 	uint generated_length = rand() % max_length;
@@ -293,6 +294,8 @@ static void read_from_file_test(uint max_length_string) {
     cr_expect(strcmp(buffer, expected_content) == 0, "Read content does not match expected content.");
 }
 
-Test(mandatory, read_from_file_random_length_str) {
-    read_from_file_test(1024);
+Test(mandatory, read_from_file_fixed_buffer) {
+    for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
+        read_from_file_test(BUFFER_FIXED_SIZE_READ);
+    }
 }
