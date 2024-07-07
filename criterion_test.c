@@ -206,3 +206,58 @@ Test(mandatory, strcmp_empty_src) {
         strcmp_empty_src_tests();
     }
 }
+
+static void write_to_file_test(const char *text) {
+    int fd = open("test_output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    cr_assert(fd != -1, "Failed to open file for writing.");
+
+    ssize_t bytes_written = ft_write(fd, text, strlen(text));
+    cr_expect(bytes_written == (ssize_t)strlen(text), "ft_write did not write the expected number of bytes.");
+
+    close(fd);
+}
+
+static void write_to_stdout_test(const char *text) {
+    ssize_t bytes_written = ft_write(STDOUT_FILENO, text, strlen(text));
+    cr_expect(bytes_written == (ssize_t)strlen(text), "ft_write did not write the expected number of bytes to stdout.");
+}
+
+static void write_with_negative_fd_test(const char *text) {
+    errno = 0;
+    ssize_t bytes_written = ft_write(-1, text, strlen(text));
+
+    cr_expect(bytes_written == -1, "ft_write should fail with negative file descriptor.");
+    cr_expect(errno == EBADF, "errno should be set to EBADF for negative file descriptor.");
+}
+
+static void write_to_read_only_file_test(const char *text) {
+    int fd = open("read_only_file.txt", O_RDONLY | O_CREAT, 0444);
+    cr_assert(fd != -1, "Failed to open or create read-only file.");
+
+    errno = 0;
+    ssize_t bytes_written = ft_write(fd, text, strlen(text));
+    close(fd);
+
+    cr_expect(bytes_written == -1, "ft_write should fail when writing to a read-only file.");
+    cr_expect(errno == EBADF || errno == EACCES, "errno should be set to EBADF or EACCES when writing to a read-only file.");
+}
+
+Test(mandatory, write_to_file) {
+    write_to_file_test("Hello, world!");
+}
+
+Test(mandatory, write_to_stdout) {
+    write_to_stdout_test("Writing to stdout.\n");
+}
+
+Test(mandatory, write_empty_string) {
+    write_to_file_test("");
+}
+
+Test(mandatory, write_with_negative_fd) {
+    write_with_negative_fd_test("This should not be written.");
+}
+
+Test(mandatory, write_to_read_only_file) {
+    write_to_read_only_file_test("Attempt to write to read-only file.");
+}
