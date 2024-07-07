@@ -294,6 +294,20 @@ static void read_from_file_test(uint max_length_string) {
     cr_expect(strcmp(buffer, expected_content) == 0, "Read content does not match expected content.");
 }
 
+static void read_from_empty_file_test() {
+    int fd = open("empty_file.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    close(fd);
+
+    fd = open("empty_file.txt", O_RDONLY);
+    cr_assert(fd != -1, "Failed to open empty file for reading.");
+
+    char    *buffer = calloc(sizeof(char), BUFFER_FIXED_SIZE_READ);
+    ssize_t bytes_read = ft_read(fd, buffer, sizeof(buffer));
+    close(fd);
+
+    cr_expect(bytes_read == 0, "ft_read should return 0 when reading from an empty file.");
+}
+
 Test(mandatory, read_from_file_fixed_buffer) {
     for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
         read_from_file_test(BUFFER_FIXED_SIZE_READ);
