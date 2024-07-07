@@ -245,23 +245,33 @@ static void write_to_read_only_file_test(const char *text) {
 }
 
 Test(mandatory, write_to_file) {
-    write_to_file_test("Hello, world!");
+    for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
+        write_to_file_test("Hello, world!");
+    }
 }
 
 Test(mandatory, write_to_stdout) {
-    write_to_stdout_test("Writing to stdout.\n");
+    for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
+        write_to_stdout_test("Writing to stdout.\n");
+    }
 }
 
 Test(mandatory, write_empty_string) {
-    write_to_file_test("");
+    for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
+        write_to_file_test("");
+    }
 }
 
 Test(mandatory, write_with_negative_fd) {
-    write_with_negative_fd_test("This should not be written.");
+    for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
+        write_with_negative_fd_test("This should not be written.");
+    }
 }
 
 Test(mandatory, write_to_read_only_file) {
-    write_to_read_only_file_test("Attempt to write to read-only file.");
+    for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
+        write_to_read_only_file_test("Attempt to write to read-only file.");
+    }
 }
 
 static void read_from_file_test(uint max_length_string) {
