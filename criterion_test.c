@@ -24,7 +24,7 @@ static inline char *generate_random_string(uint max_length) {
 
 	if (!generated_string) {
 		dprintf(STDERR_FILENO, "Allocation failed");
-		exit(EXIT_FAILURE);
+		return NULL;
 	}
 
 	for (size_t i = 0; i < generated_length; i++) {
@@ -37,6 +37,10 @@ static inline char *generate_random_string(uint max_length) {
 
 static void strlen_tests(uint max_length_string) {
 	char *generated_string = generate_random_string(max_length_string);
+
+    if (!generated_string) {
+        exit(EXIT_FAILURE);
+    }
 
 	cr_expect(strlen(generated_string) == ft_strlen(generated_string));
 
@@ -58,10 +62,16 @@ Test(mandatory, strlen_long_strings) {
 static void strcpy_random_tests(uint max_length_string) {
     char *generated_string = generate_random_string(max_length_string);
 
+    if (!generated_string) {
+        exit(EXIT_FAILURE);
+    }
+
     char *dest_std = malloc(strlen(generated_string) + 1);
     char *dest_custom = malloc(strlen(generated_string) + 1);
 
     if (!dest_std || !dest_custom) {
+        free(dest_std);
+        free(dest_custom);
         dprintf(STDERR_FILENO, "Allocation failed");
         exit(EXIT_FAILURE);
     }
@@ -82,6 +92,8 @@ static void strcpy_smaller_src_tests() {
     char *mydst_longer = malloc(15);
 
     if (!dst_longer || !mydst_longer) {
+        free(dst_longer);
+        free(mydst_longer);
         dprintf(STDERR_FILENO, "Allocation failed");
         exit(EXIT_FAILURE);
     }
@@ -100,6 +112,8 @@ static void strcpy_empty_src_tests() {
     char *mydst_emptys = malloc(15);
 
     if (!dst_emptys || !mydst_emptys) {
+        free(dst_emptys);
+        free(mydst_emptys);
         dprintf(STDERR_FILENO, "Allocation failed");
         exit(EXIT_FAILURE);
     }
@@ -140,6 +154,12 @@ Test(mandatory, strcpy_empty_src) {
 static void strcmp_random_tests(uint max_length_string) {
     char *string1 = generate_random_string(max_length_string);
     char *string2 = generate_random_string(max_length_string);
+    
+    if (!string1 || !string2) {
+        free(string1);
+        free(string2);
+        exit(EXIT_FAILURE);
+    }
 
     int std_result = strcmp(string1, string2);
     int custom_result = ft_strcmp(string1, string2);
@@ -280,6 +300,12 @@ static void read_from_file_test(uint max_length_string) {
     cr_assert(fd != -1, "Failed to open file for writing.");
 
     char *expected_content = generate_random_string(max_length_string);
+
+    if (!expected_content) {
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+
     write(fd, expected_content, strlen(expected_content));
     close(fd);
 
@@ -287,6 +313,12 @@ static void read_from_file_test(uint max_length_string) {
     cr_assert(fd != -1, "Failed to open file for reading.");
 
     char    *buffer = calloc(sizeof(char), max_length_string);
+
+    if (!buffer) {
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+
     ssize_t bytes_read = ft_read(fd, buffer, max_length_string);
     close(fd);
 
@@ -302,6 +334,12 @@ static void read_from_empty_file_test() {
     cr_assert(fd != -1, "Failed to open empty file for reading.");
 
     char    *buffer = calloc(sizeof(char), BUFFER_FIXED_SIZE_READ);
+
+    if (!buffer) {
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+
     ssize_t bytes_read = ft_read(fd, buffer, sizeof(buffer));
     close(fd);
 
@@ -311,5 +349,11 @@ static void read_from_empty_file_test() {
 Test(mandatory, read_from_file_fixed_buffer) {
     for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
         read_from_file_test(BUFFER_FIXED_SIZE_READ);
+    }
+}
+
+Test(mandatory, read_from_empy_file) {
+    for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
+        read_from_empty_file_test();
     }
 }
