@@ -305,7 +305,7 @@ static void read_from_file_test(bool fixed_buffer_size) {
     int fd = open("test_input.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
     cr_assert(fd != -1, "Failed to open file for writing.");
 
-    char *expected_content = generate_random_string(LONG_STRING_MAX_LENGTH);
+    char *expected_content = generate_random_string(fixed_buffer_size ? BUFFER_FIXED_SIZE_READ : LONG_STRING_MAX_LENGTH);
 
     if (!expected_content) {
         close(fd);
