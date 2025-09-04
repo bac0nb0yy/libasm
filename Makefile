@@ -1,6 +1,5 @@
 # Project settings
 NAME        = libasm.a
-PROJECT     = libasm
 EXEC        = checker
 
 # Compiler & Assembler
