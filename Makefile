@@ -43,9 +43,9 @@ TESTS       = \
 RM          = rm -rf
 
 # Default rule
-all: install $(LIB_DIR)/$(NAME)
+all: $(LIB_DIR)$(NAME)
 
-$(LIB_DIR)/$(NAME): $(OBJS)
+$(LIB_DIR)$(NAME): $(OBJS)
 	@mkdir -p $(LIB_DIR)
 	ar rcs $@ $^
 
@@ -54,7 +54,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.s $(INC_DIR)/libasm.h
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 # Tests
-$(EXEC): $(TESTS) $(LIB_DIR)/$(NAME)
+$(EXEC): $(TESTS) $(LIB_DIR)$(NAME)
 	$(CC) -o $@ $(TESTS) \
 		-I$(TEST_INC) -I$(INC_DIR) -I$(CRITERION_INC) \
 		-L$(LIB_DIR) -lasm \
