@@ -1,9 +1,9 @@
 bits 64
 
+global	ft_strcmp
+
 section .data
 section	.text
-
-global	ft_strcmp
 
 ft_strcmp:
 	push	rbp
@@ -27,5 +27,3 @@ ft_strcmp:
 		sub		eax, r8d
 		pop		rbp
 		ret
-
-section .note.GNU-stack noalloc noexec nowrite progbits

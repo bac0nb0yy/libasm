@@ -1,14 +1,10 @@
 bits 64
 
+global	ft_strdup
+extern	malloc, __errno_location, ft_strlen, ft_strcpy
+
 section .data
 section	.text
-
-extern	malloc
-extern	__errno_location
-extern	ft_strlen
-extern	ft_strcpy
-
-global	ft_strdup
 
 ft_strdup:
 	push    rbp
@@ -31,5 +27,3 @@ ft_strdup:
 	.done:
 		pop		rbp
 		ret
-
-section .note.GNU-stack noalloc noexec nowrite progbits

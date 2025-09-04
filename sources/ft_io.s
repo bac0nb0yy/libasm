@@ -1,10 +1,9 @@
 bits 64
 
-section .data
-
-section	.text
-
 extern __errno_location
+
+section .data
+section	.text
 
 %macro IO_WRAPPER 2
     global %1
@@ -32,5 +31,3 @@ extern __errno_location
 
 IO_WRAPPER ft_read, 0
 IO_WRAPPER ft_write, 1
-
-section .note.GNU-stack noalloc noexec nowrite progbits

@@ -1,10 +1,9 @@
 bits 64
 
-section .data
-
-section .text
-
 global ft_strlen
+
+section .data
+section .text
 
 ft_strlen:
     push    rbp
@@ -30,5 +29,3 @@ ft_strlen:
     pop		rbp
     vzeroupper
     ret
-
-section .note.GNU-stack noalloc noexec nowrite progbits

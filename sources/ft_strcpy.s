@@ -1,9 +1,9 @@
 bits 64
 
+global	ft_strcpy
+
 section .data
 section	.text
-
-global	ft_strcpy
 
 ft_strcpy:
     push	rbp
@@ -23,5 +23,3 @@ ft_strcpy:
 		mov		rax, rdi
 		pop		rbp
 		ret
-
-section .note.GNU-stack noalloc noexec nowrite progbits
