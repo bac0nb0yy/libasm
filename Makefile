@@ -66,14 +66,21 @@ test: install $(EXEC)
 
 # Criterion installation
 install:
+	@if ! command -v meson >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then \
+		echo "Installing Meson and Ninja..."; \
+		python3 -m pip install --user --upgrade pip; \
+		python3 -m pip install --user meson ninja; \
+	else \
+		echo "Meson and Ninja already installed."; \
+	fi
+
 	@if [ ! -d "$(CRITERION_DIR)" ]; then \
 		echo "Installing Criterion..."; \
-		pip3 install --user meson ninja; \
 		export PATH="$$HOME/.local/bin:$$PATH"; \
 		cd $$HOME; \
 		git clone --recursive https://github.com/Snaipe/Criterion.git; \
 		cd Criterion; \
-		meson build; \
+		meson setup build; \
 		ninja -C build; \
 	else \
 		echo "Criterion already installed."; \
@@ -89,8 +96,13 @@ install:
 	fi
 
 uninstall:
-	@echo "Removing Criterion..."
-	$(RM) $(CRITERION_DIR) $(TEST_DIR)/$(CLANGD_FILE)
+	@echo "[🧹] Removing Criterion repository..."
+	@$(RM) $(CRITERION_DIR)
+	@echo "[🧹] Removing .clangd..."
+	@$(RM) $(TEST_DIR)/$(CLANGD_FILE)
+	@echo "[🧹] Uninstalling Python packages (meson, ninja)..."
+	@python3 -m pip uninstall -y meson ninja
+	@echo "[✅] Uninstallation complete."
 
 clean:
 	$(RM) $(OBJ_DIR)
