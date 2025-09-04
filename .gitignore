@@ -1,4 +1,4 @@
 *.o
 *.a
-tests_sources/.clangd
+*.clangd
 checker
