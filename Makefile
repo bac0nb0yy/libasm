@@ -43,7 +43,7 @@ TESTS       = \
 RM          = rm -rf
 
 # Default rule
-all: $(LIB_DIR)/$(NAME)
+all: install $(LIB_DIR)/$(NAME)
 
 $(LIB_DIR)/$(NAME): $(OBJS)
 	@mkdir -p $(LIB_DIR)
@@ -54,7 +54,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.s $(INC_DIR)/libasm.h
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 # Tests
-test: $(LIB_DIR)/$(NAME)
+test: install $(LIB_DIR)/$(NAME)
 	$(CC) -o $(EXEC) $(TESTS) \
 		-I$(TEST_INC) -I$(INC_DIR) -I$(CRITERION_INC) \
 		-L$(LIB_DIR) -lasm \
@@ -77,15 +77,13 @@ install:
 		echo "Criterion already installed."; \
 	fi
 
-	@if [ ! -f "$(CLANGD_FILE)" ]; then \
+	@if [ ! -f "$(TEST_DIR)/$(CLANGD_FILE)" ]; then \
 		echo "Generating $(CLANGD_FILE)..."; \
-		echo "CompileFlags:" > $(CLANGD_FILE); \
-		echo "  Add:" >> $(CLANGD_FILE); \
-		echo "    - -I$(INC_DIR)" >> $(CLANGD_FILE); \
-		echo "    - -I$(CRITERION_INC)" >> $(CLANGD_FILE); \
-		echo "    - -L$(CRITERION_LIB)" >> $(CLANGD_FILE); \
-		echo "    - -Wl,-rpath=$(CRITERION_LIB)" >> $(CLANGD_FILE); \
-		echo "    - -lcriterion" >> $(CLANGD_FILE); \
+		echo "CompileFlags:" > $(TEST_DIR)/$(CLANGD_FILE); \
+		echo "  Add:" >> $(TEST_DIR)/$(CLANGD_FILE); \
+		echo "    - -I../$(INC_DIR)" >> $(TEST_DIR)/$(CLANGD_FILE); \
+		echo "    - -I../$(TEST_INC)" >> $(TEST_DIR)/$(CLANGD_FILE); \
+		echo "    - -I$(CRITERION_INC)" >> $(TEST_DIR)/$(CLANGD_FILE); \
 	fi
 
 uninstall:
