@@ -1,5 +1,3 @@
 *.o
 *.a
 checker
-a.out
-*.txt

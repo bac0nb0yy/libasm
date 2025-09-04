@@ -10,22 +10,23 @@ ft_strdup:
 	push    rbp
 	mov     rbp, rsp
 
-	xor		rax, rax
+	sub     rsp, 8
+	push	rdi
 
 	call    ft_strlen
 	inc 	rax
 
-	mov		r12, rdi
 	mov 	rdi, rax
 	call	malloc wrt ..plt
+	pop		rsi
 	or 		rax, rax
 	je		.done
 
 	mov		rdi, rax
-	mov		rsi, r12
 	call	ft_strcpy
 	jmp		.done
 
 	.done:
+		add     rsp, 8
 		pop		rbp
 		ret
