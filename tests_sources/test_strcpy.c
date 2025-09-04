@@ -1,5 +1,6 @@
-#include "../includes/libasm.h"
-#include "../tests_includes/tests_utils.h"
+#include "libasm.h"
+#include "tests_utils.h"
+
 #include <criterion/criterion.h>
 #include <string.h>
 

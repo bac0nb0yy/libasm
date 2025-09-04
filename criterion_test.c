@@ -1,7 +1,7 @@
+#include "libasm.h"
+
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
-
-#include "libasm.h"
 
 #define SMALL_STRING_MAX_LENGTH 100
 #define LONG_STRING_MAX_LENGTH 100000

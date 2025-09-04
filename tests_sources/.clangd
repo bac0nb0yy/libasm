@@ -1,4 +1,5 @@
 CompileFlags:
   Add:
-    - -I./includes/
+    - -I../includes/
+    - -I../tests_includes/
     - -I/home/dtelnov/Criterion/include

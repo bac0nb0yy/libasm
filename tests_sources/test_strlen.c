@@ -1,9 +1,9 @@
+#include "libasm.h"
+#include "tests_utils.h"
+
 #include <criterion/criterion.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "../includes/libasm.h"
-#include "../tests_includes/tests_utils.h"
 
 #define SMALL_STRING_MAX_LENGTH 100
 #define LONG_STRING_MAX_LENGTH 100000
