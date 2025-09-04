@@ -117,6 +117,7 @@ $(NAME): $(OBJS_MANDATORY)
 	@printf "$(LOAD_CURS_SAVE)$(NC)█$(CURS_UP)"
 	@printf "\b\b\b\b$(BOLD)%3d%%$(NC)\r" $(PERCENT)
 	@echo "\n\n\n[🔘] $(BGREEN)$(PROJECT_NAME) compiled !$(NC)\n"
+	@mkdir -p $(LIB_DIR)
 	@ar rcs $(LIB_DIR)/$@ $^
 	@printf "[✨] $(BCYAN)[ %d/%d ]\t$(BWHITE)All files have been compiled ✔️$(NC)\n" $(FILE_COUNT) $(TOTAL)
 	@echo "[💠] $(BCYAN)$(PROJECT_NAME)\t$(BWHITE) created ✔️\n$(NC)"
@@ -181,8 +182,9 @@ clean:
 	@echo "[🧼] $(BYELLOW)Objects $(YELLOW)files have been cleaned from $(PROJECT_NAME) ✔️$(NC)\n"
 
 fclean: clean
-	@$(RM) $(LIB_DIR)/$(NAME)
+	@$(RM) $(LIB_DIR)
 	@$(RM) $(EXECUTABLE_NAME)
+	@$(RM) *.txt
 	@echo "[🚮] $(BRED)All $(RED)files have been cleaned ✔️$(NC)\n"
 
 re: clean all
