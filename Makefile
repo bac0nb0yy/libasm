@@ -69,7 +69,7 @@ TESTS = \
 	$(TEST_DIR)/tests_utils.c \
 	$(TEST_DIR)/test_strlen.c \
 	$(TEST_DIR)/test_strcpy.c \
-# 	$(TEST_DIR)/test_strcmp.c \
+	$(TEST_DIR)/test_strcmp.c \
 # 	$(TEST_DIR)/test_write.c \
 # 	$(TEST_DIR)/test_read.c \
 # 	$(TEST_DIR)/test_strdup.c
