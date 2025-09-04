@@ -63,6 +63,17 @@ OBJS_MANDATORY = $(addprefix $(OBJ_DIR), $(notdir $(SRCS_MANDATORY:.s=.o)))
 
 INCS = includes/libasm.h
 
+TEST_INC = tests_includes/
+TEST_DIR = tests_sources
+TESTS = \
+	$(TEST_DIR)/tests_utils.c \
+	$(TEST_DIR)/test_strlen.c \
+# 	$(TEST_DIR)/test_strcpy.c \
+# 	$(TEST_DIR)/test_strcmp.c \
+# 	$(TEST_DIR)/test_write.c \
+# 	$(TEST_DIR)/test_read.c \
+# 	$(TEST_DIR)/test_strdup.c
+
 TOTAL = $(words $(SRCS_MANDATORY))
 FILE_COUNT = 0
 
@@ -121,7 +132,6 @@ $(NAME): $(OBJS_MANDATORY)
 	@ar rcs $(LIB_DIR)/$@ $^
 	@printf "[✨] $(BCYAN)[ %d/%d ]\t$(BWHITE)All files have been compiled ✔️$(NC)\n" $(FILE_COUNT) $(TOTAL)
 	@echo "[💠] $(BCYAN)$(PROJECT_NAME)\t$(BWHITE) created ✔️\n$(NC)"
-
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.s $(INCS)
 	@mkdir -p $(OBJ_DIR)
@@ -190,6 +200,6 @@ fclean: clean
 re: clean all
 
 test: $(NAME)
-	@$(CC) -o $(EXECUTABLE_NAME) $(TEST_FILE_NAME) -I$(INC_DIR) -I$(CRITERION_INSTALL_DIR)/include $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) && ./$(EXECUTABLE_NAME)
+	@$(CC) -o $(EXECUTABLE_NAME) $(TESTS) -I$(TEST_INC) -I$(INC_DIR) -I$(CRITERION_INSTALL_DIR)/include $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) && ./$(EXECUTABLE_NAME)
 
 .PHONY: bonus all clean fclean re test
