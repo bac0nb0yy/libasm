@@ -1,0 +1,7 @@
+CompileFlags:
+  Add:
+    - -I./includes
+    - -I/home/dtelnov/Criterion/include
+    - -L/home/dtelnov/Criterion/build/src
+    - -Wl,-rpath=/home/dtelnov/Criterion/build/src
+    - -lcriterion

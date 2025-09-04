@@ -14,6 +14,10 @@ OBJ_DIR = objects/
 LIB_DIR = library/
 INC_DIR = includes/
 
+USER_HOME 				:= $(HOME)
+CRITERION_INSTALL_DIR 	:= $(USER_HOME)/Criterion
+CLANGD_FILE 			:= .clangd
+
 CRITERION_DIR = $(HOME)/Criterion/include/criterion
 CRITERION_FLAGS = -Wl,-rpath=$(HOME)/Criterion/build/src -L$(HOME)/Criterion/build/src -W
 
@@ -135,6 +139,40 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.s $(INCS)
 	done
 	@printf "$(NC)█$(CURS_UP)"
 	@printf "\b\b\b\b$(BOLD)%3d%%$(NC)\r" $(PERCENT)
+
+install:
+	@if [ ! -d "$(CRITERION_INSTALL_DIR)" ]; then \
+		echo "Installing Meson and Ninja..."; \
+		pip3 install --user meson; \
+		python3 -m pip install --user ninja; \
+		export PATH="$$HOME/.local/bin:$$PATH"; \
+		cd $$HOME; \
+		echo "Cloning Criterion..."; \
+		git clone --recursive https://github.com/Snaipe/Criterion.git; \
+		cd Criterion; \
+		meson build; \
+		ninja -C build; \
+	else \
+		echo "Criterion already installed at $(CRITERION_INSTALL_DIR)"; \
+	fi
+
+	@echo "Generating $(CLANGD_FILE)..."
+	@echo "CompileFlags:" > $(CLANGD_FILE)
+	@echo "  Add:" >> $(CLANGD_FILE)
+	@echo "    - -I./includes" >> $(CLANGD_FILE)
+	@echo "    - -I$(CRITERION_INSTALL_DIR)/include" >> $(CLANGD_FILE)
+	@echo "    - -L$(CRITERION_INSTALL_DIR)/build/src" >> $(CLANGD_FILE)
+	@echo "    - -Wl,-rpath=$(CRITERION_INSTALL_DIR)/build/src" >> $(CLANGD_FILE)
+	@echo "    - -lcriterion" >> $(CLANGD_FILE)
+
+	@echo "Installation complete."
+
+uninstall:
+	@echo "Removing Criterion installation..."
+	@rm -rf $(CRITERION_INSTALL_DIR)
+	@echo "Removing $(CLANGD_FILE)..."
+	@rm -f $(CLANGD_FILE)
+	@echo "Uninstallation complete."
 
 bonus: all
 
