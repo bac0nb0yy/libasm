@@ -190,9 +190,6 @@ fclean: clean
 re: clean all
 
 test: $(NAME)
-	@$(CC) -o $(EXECUTABLE_NAME) $(TEST_FILE_NAME) -I$(INC_DIR) -I$(CRITERION_DIR) $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) && ./$(EXECUTABLE_NAME)
-
-test42: $(NAME)
-	@$(CC) -o $(EXECUTABLE_NAME) $(TEST_FILE_NAME) -I$(INC_DIR) -I$(CRITERION_DIR) $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) -D TEST42=true && ./$(EXECUTABLE_NAME)
+	@$(CC) -o $(EXECUTABLE_NAME) $(TEST_FILE_NAME) -I$(INC_DIR) -I$(CRITERION_INSTALL_DIR)/include $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) && ./$(EXECUTABLE_NAME)
 
 .PHONY: bonus all clean fclean re test

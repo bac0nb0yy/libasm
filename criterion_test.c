@@ -1,15 +1,7 @@
-#include <string.h>
-#ifndef TEST42
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
-#else
-#include <criterion.h>
-#endif
 
 #include "libasm.h"
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #define SMALL_STRING_MAX_LENGTH 100
 #define LONG_STRING_MAX_LENGTH 100000
@@ -57,7 +49,6 @@ Test(mandatory, strlen_small_strings) {
 		strlen_tests(SMALL_STRING_MAX_LENGTH);
 	}
 }
-
 Test(mandatory, strlen_long_strings) {
 	for (uint i = 0; i < NB_STRLEN_TESTCASES; ++i) {
 		strlen_tests(LONG_STRING_MAX_LENGTH);
@@ -137,24 +128,17 @@ Test(mandatory, strcpy_small_strings) {
 		strcpy_random_tests(SMALL_STRING_MAX_LENGTH);
 	}
 }
-
 Test(mandatory, strcpy_long_strings) {
 	for (uint i = 0; i < NB_STRCPY_TESTCASES; ++i) {
 		strcpy_random_tests(LONG_STRING_MAX_LENGTH);
 	}
 }
-
 Test(mandatory, strcpy_smaller_src) {
 	for (uint i = 0; i < NB_STRCPY_TESTCASES; ++i) {
 		strcpy_smaller_src_tests();
 	}
 }
-
-Test(mandatory, strcpy_empty_src) {
-	for (uint i = 0; i < NB_STRCPY_TESTCASES; ++i) {
-		strcpy_empty_src_tests();
-	}
-}
+Test(mandatory, strcpy_empty_src) { strcpy_empty_src_tests(); }
 
 static void strcmp_random_tests(uint max_length_string) {
 	char* string1 = generate_random_string(max_length_string);
@@ -218,30 +202,22 @@ Test(mandatory, strcmp_small_strings) {
 		strcmp_random_tests(SMALL_STRING_MAX_LENGTH);
 	}
 }
-
 Test(mandatory, strcmp_long_strings) {
 	for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
 		strcmp_random_tests(LONG_STRING_MAX_LENGTH);
 	}
 }
-
 Test(mandatory, strcmp_longer_src) {
 	for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
 		strcmp_longer_src_tests();
 	}
 }
-
 Test(mandatory, strcmp_smaller_src) {
 	for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
 		strcmp_smaller_src_tests();
 	}
 }
-
-Test(mandatory, strcmp_empty_src) {
-	for (uint i = 0; i < NB_STRCMP_TESTCASES; ++i) {
-		strcmp_empty_src_tests();
-	}
-}
+Test(mandatory, strcmp_empty_src) { strcmp_empty_src_tests(); }
 
 static void write_to_file_test(const char* text) {
 	int fd = open("test_output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -296,33 +272,24 @@ Test(mandatory, write_to_file) {
 		write_to_file_test(generated_string);
 	}
 }
-
 Test(mandatory, write_to_stdout) {
 	for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
 		write_to_stdout_test("Writing to stdout.\n");
 	}
 }
-
-Test(mandatory, write_empty_string) {
-	for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
-		write_to_file_test("");
-	}
-}
-
+Test(mandatory, write_empty_string) { write_to_file_test(""); }
 Test(mandatory, write_with_negative_fd) {
-	for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
-		write_with_negative_fd_test("This should not be written.");
-	}
+	write_with_negative_fd_test("This should not be written.");
 }
-
 Test(mandatory, write_to_read_only_file) {
-	for (uint i = 0; i < NB_WRITE_TESTCASES; ++i) {
-		write_to_read_only_file_test("Attempt to write to read-only file.");
-	}
+	write_to_read_only_file_test("Attempt to write to read-only file.");
 }
 
 static void read_from_file_test(bool fixed_buffer_size) {
-	int fd = open("test_input.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	char filename[64];
+	snprintf(filename, sizeof(filename), "test_input_%d.txt", getpid());
+
+	int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	cr_assert(fd != -1, "Failed to open file for writing.");
 
 	char* expected_content = generate_random_string(
@@ -333,36 +300,51 @@ static void read_from_file_test(bool fixed_buffer_size) {
 		exit(EXIT_FAILURE);
 	}
 
-	write(fd, expected_content, strlen(expected_content));
+	size_t expected_len = strlen(expected_content);
+
+	ssize_t total_written = 0;
+	while ((size_t)total_written < expected_len) {
+		ssize_t written = write(fd, expected_content + total_written,
+								expected_len - total_written);
+		cr_assert(written > 0, "Write failed or returned zero bytes.");
+		total_written += written;
+	}
 	close(fd);
 
-	fd = open("test_input.txt", O_RDONLY);
+	fd = open(filename, O_RDONLY);
 	cr_assert(fd != -1, "Failed to open file for reading.");
 
-	size_t buffer_size = fixed_buffer_size ? BUFFER_FIXED_SIZE_READ
-										   : rand() % BUFFER_FIXED_SIZE_READ;
-	char* buffer = calloc(sizeof(char), LONG_STRING_MAX_LENGTH + 1);
+	size_t buffer_size =
+		fixed_buffer_size
+			? BUFFER_FIXED_SIZE_READ
+			: (rand() % (BUFFER_FIXED_SIZE_READ - 1)) + 1; // avoid 0
 
+	char* buffer = calloc(1, LONG_STRING_MAX_LENGTH + 1);
 	if (!buffer) {
 		close(fd);
+		free(expected_content);
 		exit(EXIT_FAILURE);
 	}
 
 	ssize_t bytes_read = 0;
 	ssize_t bytes = 0;
-	for (;;) {
-		bytes = ft_read(fd, buffer, buffer_size);
-		if (bytes < 1) {
-			break;
-		}
+
+	while ((bytes = ft_read(fd, buffer + bytes_read, buffer_size)) > 0) {
 		bytes_read += bytes;
+		cr_assert(bytes_read <= (ssize_t)LONG_STRING_MAX_LENGTH,
+				  "Read more bytes than buffer can hold.");
 	}
+	buffer[bytes_read] = '\0';
+
 	close(fd);
 
-	cr_expect(bytes_read == (ssize_t)strlen(expected_content),
+	cr_expect(bytes_read == (ssize_t)expected_len,
 			  "ft_read did not read the expected number of bytes.");
 	cr_expect(strcmp(buffer, expected_content) == 0,
 			  "Read content does not match expected content.");
+
+	free(buffer);
+	free(expected_content);
 }
 
 static void read_from_empty_file_test() {
@@ -424,20 +406,47 @@ Test(mandatory, read_from_file_random_buffer_length) {
 	}
 }
 
-Test(mandatory, read_from_empy_file) {
-	for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
-		read_from_empty_file_test();
+Test(mandatory, read_from_empy_file) { read_from_empty_file_test(); }
+Test(mandatory, read_with_negative_fd) { read_with_negative_fd_test(); }
+Test(mandatory, read_from_write_only_file) { read_from_write_only_file_test(); }
+
+static void strdup_random_tests(uint max_length_string) {
+	char* generated_string = generate_random_string(max_length_string);
+
+	if (!generated_string) {
+		exit(EXIT_FAILURE);
 	}
+
+	char* std_dup = strdup(generated_string);
+	char* ft_dup = ft_strdup(generated_string);
+
+	cr_expect(std_dup != NULL && ft_dup != NULL,
+			  "strdup or ft_strdup returned NULL");
+
+	cr_expect(strcmp(std_dup, ft_dup) == 0,
+			  "ft_strdup does not match strdup output");
+
+	free(generated_string);
+	free(std_dup);
+	free(ft_dup);
 }
 
-Test(mandatory, read_with_negative_fd) {
-	for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
-		read_with_negative_fd_test();
-	}
+static void strdup_empty_string_test() {
+	char* std_dup = strdup("");
+	char* ft_dup = ft_strdup("");
+
+	cr_expect(std_dup != NULL && ft_dup != NULL,
+			  "strdup or ft_strdup returned NULL on empty string");
+	cr_expect(strcmp(std_dup, ft_dup) == 0,
+			  "ft_strdup does not match strdup output on empty string");
+
+	free(std_dup);
+	free(ft_dup);
 }
 
-Test(mandatory, read_from_write_only_file) {
-	for (uint i = 0; i < NB_READ_TESTCASES; ++i) {
-		read_from_write_only_file_test();
+Test(mandatory, strdup_random_strings) {
+	for (uint i = 0; i < NB_STRLEN_TESTCASES; ++i) {
+		strdup_random_tests(LONG_STRING_MAX_LENGTH);
 	}
 }
+Test(mandatory, strdup_empty_string) { strdup_empty_string_test(); }
