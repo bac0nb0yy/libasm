@@ -60,6 +60,7 @@ Test(mandatory, write_to_file) {
 		write_to_file_test(generated_string);
 		free(generated_string);
 	}
+	remove("test_output.txt");
 }
 
 Test(mandatory, write_to_stdout) {
@@ -68,7 +69,10 @@ Test(mandatory, write_to_stdout) {
 	}
 }
 
-Test(mandatory, write_empty_string) { write_to_file_test(""); }
+Test(mandatory, write_empty_string) {
+	write_to_file_test("");
+	remove("test_output.txt");
+}
 
 Test(mandatory, write_with_negative_fd) {
 	write_with_invalid_fd_test("This should not be written.", -1);
@@ -76,4 +80,5 @@ Test(mandatory, write_with_negative_fd) {
 
 Test(mandatory, write_to_read_only_file) {
 	write_to_read_only_file_test("Attempt to write to read-only file.");
+	remove("read_only_file.txt");
 }
