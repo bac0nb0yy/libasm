@@ -90,7 +90,7 @@ install:
 
 uninstall:
 	@echo "Removing Criterion..."
-	$(RM) $(CRITERION_DIR) $(CLANGD_FILE)
+	$(RM) $(CRITERION_DIR) $(TEST_DIR)/$(CLANGD_FILE)
 
 clean:
 	$(RM) $(OBJ_DIR)
