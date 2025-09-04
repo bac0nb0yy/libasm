@@ -5,10 +5,6 @@
 
 #define SMALL_STRING_MAX_LENGTH 100
 #define LONG_STRING_MAX_LENGTH 100000
-#define NB_STRCMP_TESTCASES 100
-#define NB_WRITE_TESTCASES 100
-#define NB_READ_TESTCASES 2
-#define BUFFER_FIXED_SIZE_READ 1024
 
 void* xmalloc(size_t size);
 char* generate_random_string(unsigned int max_length);

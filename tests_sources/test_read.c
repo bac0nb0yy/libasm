@@ -9,6 +9,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#define NB_READ_TESTCASES 2
+#define BUFFER_FIXED_SIZE_READ 1024
+
 static void read_from_file_test(bool fixed_buffer_size) {
 	char filename[64];
 	snprintf(filename, sizeof(filename), "test_input_%d.txt", getpid());

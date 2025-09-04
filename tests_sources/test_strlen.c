@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SMALL_STRING_MAX_LENGTH 100
-#define LONG_STRING_MAX_LENGTH 100000
 #define NB_STRLEN_TESTCASES 100
 
 static void strlen_tests(unsigned int max_length_string) {

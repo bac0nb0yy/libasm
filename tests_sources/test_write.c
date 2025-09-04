@@ -8,6 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#define NB_WRITE_TESTCASES 100
+
 static void write_to_file_test(const char* text) {
 	int fd = open("test_output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	cr_assert(fd != -1, "Failed to open file for writing.");

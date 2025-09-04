@@ -4,6 +4,8 @@
 #include <criterion/criterion.h>
 #include <string.h>
 
+#define NB_STRCMP_TESTCASES 100
+
 static void run_strcmp_test(const char* s1, const char* s2) {
 	int std_res = strcmp(s1, s2);
 	int ft_res = ft_strcmp(s1, s2);

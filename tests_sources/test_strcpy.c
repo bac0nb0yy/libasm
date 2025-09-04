@@ -5,8 +5,6 @@
 #include <string.h>
 
 #define NB_STRCPY_TESTCASES 100
-#define SMALL_STRING_MAX_LENGTH 100
-#define LONG_STRING_MAX_LENGTH 100000
 
 static void run_strcpy_test(const char* src) {
 	size_t len = strlen(src) + 1;

@@ -72,7 +72,7 @@ TESTS = \
 	$(TEST_DIR)/test_strcmp.c \
 	$(TEST_DIR)/test_write.c \
 	$(TEST_DIR)/test_read.c \
-# 	$(TEST_DIR)/test_strdup.c
+	$(TEST_DIR)/test_strdup.c
 
 TOTAL = $(words $(SRCS_MANDATORY))
 FILE_COUNT = 0
@@ -111,7 +111,7 @@ define GET_G_GRADIENT
 $(word $(1),$(GRADIENT_G))
 endef
 
-all: $(NAME)
+all: install $(NAME)
 
 $(NAME): $(OBJS_MANDATORY)
 	@echo "$(ERASE_L)$(BOLD)\tCompiling:$(NC)"
@@ -167,16 +167,19 @@ install:
 		echo "Criterion already installed at $(CRITERION_INSTALL_DIR)"; \
 	fi
 
-	@echo "Generating $(CLANGD_FILE)..."
-	@echo "CompileFlags:" > $(CLANGD_FILE)
-	@echo "  Add:" >> $(CLANGD_FILE)
-	@echo "    - -I./includes" >> $(CLANGD_FILE)
-	@echo "    - -I$(CRITERION_INSTALL_DIR)/include" >> $(CLANGD_FILE)
-	@echo "    - -L$(CRITERION_INSTALL_DIR)/build/src" >> $(CLANGD_FILE)
-	@echo "    - -Wl,-rpath=$(CRITERION_INSTALL_DIR)/build/src" >> $(CLANGD_FILE)
-	@echo "    - -lcriterion" >> $(CLANGD_FILE)
-
-	@echo "Installation complete."
+	@if [ ! -f "$(CLANGD_FILE)" ]; then \
+		echo "Generating $(CLANGD_FILE)..."; \
+		echo "CompileFlags:" > $(CLANGD_FILE); \
+		echo "  Add:" >> $(CLANGD_FILE); \
+		echo "    - -I./includes" >> $(CLANGD_FILE); \
+		echo "    - -I$(CRITERION_INSTALL_DIR)/include" >> $(CLANGD_FILE); \
+		echo "    - -L$(CRITERION_INSTALL_DIR)/build/src" >> $(CLANGD_FILE); \
+		echo "    - -Wl,-rpath=$(CRITERION_INSTALL_DIR)/build/src" >> $(CLANGD_FILE); \
+		echo "    - -lcriterion" >> $(CLANGD_FILE); \
+		echo "Installation complete."; \
+	else \
+		echo "$(CLANGD_FILE) already exists."; \
+	fi
 
 uninstall:
 	@echo "Removing Criterion installation..."
@@ -202,4 +205,4 @@ re: clean all
 test: $(NAME)
 	@$(CC) -o $(EXECUTABLE_NAME) $(TESTS) -I$(TEST_INC) -I$(INC_DIR) -I$(CRITERION_INSTALL_DIR)/include $(CRITERION_FLAGS) -lasm -lc -lcriterion -L$(LIB_DIR) $(CFLAGS) && ./$(EXECUTABLE_NAME)
 
-.PHONY: bonus all clean fclean re test
+.PHONY: bonus all clean fclean re test install uninstall
