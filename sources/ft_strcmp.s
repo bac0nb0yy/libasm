@@ -6,10 +6,7 @@ section .data
 section	.text
 
 ft_strcmp:
-	push	rbp
-	mov		rbp, rsp
-
-	xor		eax, eax
+	xor		rax, rax
 	xor		r8d, r8d
 	xor		rcx, rcx
 
@@ -25,5 +22,4 @@ ft_strcmp:
 
 	.done:
 		sub		eax, r8d
-		pop		rbp
 		ret

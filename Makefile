@@ -54,12 +54,14 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.s $(INC_DIR)/libasm.h
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 # Tests
-test: install $(LIB_DIR)/$(NAME)
-	$(CC) -o $(EXEC) $(TESTS) \
+$(EXEC): $(TESTS) $(LIB_DIR)/$(NAME)
+	$(CC) -o $@ $(TESTS) \
 		-I$(TEST_INC) -I$(INC_DIR) -I$(CRITERION_INC) \
 		-L$(LIB_DIR) -lasm \
 		-L$(CRITERION_LIB) -Wl,-rpath=$(CRITERION_LIB) \
 		-lcriterion $(CFLAGS)
+
+test: install $(EXEC)
 	./$(EXEC)
 
 # Criterion installation

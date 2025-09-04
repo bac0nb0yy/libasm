@@ -8,9 +8,6 @@ section	.text
 %macro IO_WRAPPER 2
     global %1
     %1:
-        push	rbp
-        mov		rbp, rsp
-
         mov     rax, %2
         syscall
         or      rax, rax
@@ -18,14 +15,13 @@ section	.text
         jmp     .done
 
         .fail:
-            mov     rdx, rax
-            neg     rdx
+			neg		rax
+            mov     rcx, rax
             call    __errno_location wrt ..plt
-            mov     [rax], rdx
+			mov		[rax], rcx
             mov     rax, -1
         
         .done:
-            pop     rbp
             ret
 %endmacro
 

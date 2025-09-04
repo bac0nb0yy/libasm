@@ -6,9 +6,6 @@ section .data
 section	.text
 
 ft_strcpy:
-    push	rbp
-    mov		rbp, rsp
-
 	xor		rcx, rcx
 
 	.loop:
@@ -21,5 +18,4 @@ ft_strcpy:
 
 	.done:
 		mov		rax, rdi
-		pop		rbp
 		ret
