@@ -67,8 +67,9 @@ test: install $(EXEC)
 install:
 	@if ! command -v meson >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then \
 		echo "Installing Meson and Ninja..."; \
-		python3 -m pip install --user --upgrade pip; \
-		python3 -m pip install --user meson ninja; \
+		python3 -m venv venv; \
+		source venv/bin/activate; \
+		pip install meson ninja; \
 	else \
 		echo "Meson and Ninja already installed."; \
 	fi
@@ -85,6 +86,9 @@ install:
 		echo "Criterion already installed."; \
 	fi
 
+	@deactivate 2>/dev/null || true;
+	@$(RM) venv
+
 	@if [ ! -f "$(TEST_DIR)/$(CLANGD_FILE)" ]; then \
 		echo "Generating $(CLANGD_FILE)..."; \
 		echo "CompileFlags:" > $(TEST_DIR)/$(CLANGD_FILE); \
@@ -99,8 +103,6 @@ uninstall:
 	@$(RM) $(CRITERION_DIR)
 	@echo "[🧹] Removing .clangd..."
 	@$(RM) $(TEST_DIR)/$(CLANGD_FILE)
-	@echo "[🧹] Uninstalling Python packages (meson, ninja)..."
-	@python3 -m pip uninstall -y meson ninja
 	@echo "[✅] Uninstallation complete."
 
 clean:
