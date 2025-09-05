@@ -3,3 +3,6 @@
 *.clangd
 checker
 tools/
+venv/
+.cache/
+.local/

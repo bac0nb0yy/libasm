@@ -14,12 +14,17 @@ OBJ_DIR     = objects/
 LIB_DIR     = library/
 INC_DIR     = includes/
 
-# Criterion
-USER_HOME   	:= $(HOME)
-CRITERION_DIR 	= $(USER_HOME)/Criterion
-CLANGD_FILE   	= .clangd
+# Deps
+DEPS_DIR       := $(CURDIR)/deps
+NINJA_DIR      := $(DEPS_DIR)/ninja
+MESON_DIR      := $(DEPS_DIR)/meson
+BIN_DIR        := $(CURDIR)/.local/bin
+
+CRITERION_DIR  := $(CURDIR)/Criterion
 CRITERION_INC 	= $(CRITERION_DIR)/include
 CRITERION_LIB 	= $(CRITERION_DIR)/build/src
+
+CLANGD_FILE   	= .clangd
 
 # Sources
 MANDATORY   := ft_io ft_strcmp ft_strcpy ft_strdup ft_strlen
@@ -60,34 +65,52 @@ $(EXEC): $(TESTS) $(LIB_DIR)$(NAME)
 		-L$(CRITERION_LIB) -Wl,-rpath=$(CRITERION_LIB) \
 		-lcriterion $(CFLAGS)
 
-test: install $(EXEC)
+test: deps $(EXEC)
 	./$(EXEC)
 
 # Criterion installation
-install:
-	@if ! command -v meson >/dev/null 2>&1 || ! command -v ninja >/dev/null 2>&1; then \
-		echo "Installing Meson and Ninja..."; \
-		python3 -m venv venv; \
-		source venv/bin/activate; \
-		pip install meson ninja; \
+deps:
+	@mkdir -p $(DEPS_DIR) $(BIN_DIR)
+
+	@if ! command -v $(BIN_DIR)/ninja >/dev/null 2>&1; then \
+		echo "[🔨] Installing Ninja from source..."; \
+		cd $(DEPS_DIR); \
+		git clone https://github.com/ninja-build/ninja.git || true; \
+		cd ninja; \
+		git fetch --all; \
+		git checkout v1.10.2; \
+		cmake -B build-cmake -S .; \
+		cmake --build build-cmake; \
+		cp build-cmake/ninja $(BIN_DIR)/ninja; \
 	else \
-		echo "Meson and Ninja already installed."; \
+		echo "[✅] Ninja already built."; \
+	fi
+
+	@if ! command -v $(BIN_DIR)/meson >/dev/null 2>&1; then \
+		echo "[🔨] Installing Meson from source..."; \
+		cd $(DEPS_DIR); \
+		git clone https://github.com/mesonbuild/meson.git || true; \
+		cd meson; \
+		git fetch --all; \
+		git checkout 0.59.4; \
+		ln -sf $(MESON_DIR)/meson.py $(BIN_DIR)/meson; \
+		chmod +x $(BIN_DIR)/meson; \
+	else \
+		echo "[✅] Meson already built."; \
 	fi
 
 	@if [ ! -d "$(CRITERION_DIR)" ]; then \
-		echo "Installing Criterion..."; \
-		export PATH="$$HOME/.local/bin:$$PATH"; \
-		cd $$HOME; \
-		git clone --recursive https://github.com/Snaipe/Criterion.git; \
-		cd Criterion; \
-		meson setup build; \
-		ninja -C build; \
+		echo "[📦] Installing Criterion from source..."; \
+		export PATH="$(BIN_DIR):$$PATH"; \
+		git clone --recursive https://github.com/Snaipe/Criterion.git $(CRITERION_DIR); \
+		cd $(CRITERION_DIR); \
+		git checkout v2.4.2; \
+		git submodule update --init --recursive; \
+		$(BIN_DIR)/meson setup build; \
+		$(BIN_DIR)/ninja -C build; \
 	else \
-		echo "Criterion already installed."; \
+		echo "[✅] Criterion already built."; \
 	fi
-
-	@deactivate 2>/dev/null || true;
-	@$(RM) venv
 
 	@if [ ! -f "$(TEST_DIR)/$(CLANGD_FILE)" ]; then \
 		echo "Generating $(CLANGD_FILE)..."; \
@@ -103,16 +126,22 @@ uninstall:
 	@$(RM) $(CRITERION_DIR)
 	@echo "[🧹] Removing .clangd..."
 	@$(RM) $(TEST_DIR)/$(CLANGD_FILE)
+	@echo "[🧹] Removing Ninja and Meson source..."
+	@$(RM) $(NINJA_DIR) $(MESON_DIR)
+	@echo "[🧹] Removing local bin..."
+	@$(RM) $(BIN_DIR)/ninja $(BIN_DIR)/meson
+	@$(RM) $(DEPS_DIR)
 	@echo "[✅] Uninstallation complete."
 
+# Defaults rules
 clean:
 	$(RM) $(OBJ_DIR)
 
 fclean: clean
-	$(RM) $(LIB_DIR) $(EXEC)
+	$(RM) $(LIB_DIR) $(EXEC) $(DEPS_DIR)
 
 re: fclean all
 
 bonus: all
 
-.PHONY: all bonus clean fclean re test install uninstall
+.PHONY: all bonus clean fclean re test deps uninstall
